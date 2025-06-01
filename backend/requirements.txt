@@ -3,10 +3,8 @@ uvicorn[standard]
 pydantic
 # Agno framework and related dependencies
 agno
-crawl4ai
 google-generativeai
-# Additional dependencies for enhanced functionality
-boto3  # For AWS OpenSearch integration (when needed)
-requests  # For HTTP requests
-beautifulsoup4  # For HTML parsing
-lxml  # XML/HTML parser
+asyncpg
+psycopg2-binary
+sqlalchemy[asyncio]
+python-dotenv

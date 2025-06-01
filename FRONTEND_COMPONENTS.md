@@ -419,11 +419,29 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onBarcodeScanned
 
   return (
     <View style={styles.container}>
-      <Camera
+      <CameraView
         style={styles.camera}
-        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-        barCodeScannerSettings={{
-          barCodeTypes: [BarCodeScanner.Constants.BarCodeType.upc_a, /* other types */],
+        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+        barcodeScannerSettings={{
+          barcodeTypes: [BarCodeScanner.Constants.BarCodeType.upc_a, /* other types */],
+        }}
+      />
+      
+      {/* Overlay positioned outside CameraView using absolute positioning */}
+      <View style={styles.overlay}>
+        <View style={styles.scanFrame} />
+        <Text style={styles.instructionText}>Point camera at barcode</Text>
+      </View>
+      
+      {/* Buttons positioned outside CameraView */}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+          <Text style={styles.closeButtonText}>✕</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
         }}
       >
         <View style={styles.overlay}>

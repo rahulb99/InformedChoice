@@ -75,33 +75,35 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onBarcodeScanned
         barcodeScannerSettings={{
           barcodeTypes: ['qr', 'ean13', 'ean8', 'upc_a', 'upc_e', 'code128', 'code39'],
         }}
-      >
-        <View style={styles.overlay}>
-          <View style={styles.topOverlay} />
-          <View style={styles.middleOverlay}>
-            <View style={styles.sideOverlay} />
-            <View style={styles.scanWindow}>
-              <View style={styles.scanFrame} />
-            </View>
-            <View style={styles.sideOverlay} />
+      />
+      
+      {/* Overlay positioned outside CameraView */}
+      <View style={styles.overlay}>
+        <View style={styles.topOverlay} />
+        <View style={styles.middleOverlay}>
+          <View style={styles.sideOverlay} />
+          <View style={styles.scanWindow}>
+            <View style={styles.scanFrame} />
           </View>
-          <View style={styles.bottomOverlay}>
-            <Text style={styles.instructionText}>
-              Point your camera at a barcode
-            </Text>
-          </View>
+          <View style={styles.sideOverlay} />
         </View>
+        <View style={styles.bottomOverlay}>
+          <Text style={styles.instructionText}>
+            Point your camera at a barcode
+          </Text>
+        </View>
+      </View>
+      
+      {/* Button container positioned outside CameraView */}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.cameraButton} onPress={toggleCameraFacing}>
+          <Text style={styles.buttonText}>Flip Camera</Text>
+        </TouchableOpacity>
         
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.cameraButton} onPress={toggleCameraFacing}>
-            <Text style={styles.buttonText}>Flip Camera</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-            <Text style={styles.buttonText}>Close</Text>
-          </TouchableOpacity>
-        </View>
-      </CameraView>
+        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+          <Text style={styles.buttonText}>Close</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -111,6 +113,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     backgroundColor: '#000',
+    position: 'relative',
   },
   message: {
     textAlign: 'center',
@@ -120,6 +123,8 @@ const styles = StyleSheet.create({
   },
   camera: {
     flex: 1,
+    width: '100%',
+    height: '100%',
   },
   overlay: {
     position: 'absolute',
@@ -127,6 +132,8 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+    zIndex: 1,
+    pointerEvents: 'none', // Allow camera to receive touch events
   },
   topOverlay: {
     flex: 1,
@@ -172,6 +179,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     paddingHorizontal: 20,
+    zIndex: 2,
+    pointerEvents: 'box-none', // Allow touches to pass through to buttons
   },
   button: {
     backgroundColor: '#2196F3',

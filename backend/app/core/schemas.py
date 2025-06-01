@@ -33,6 +33,11 @@ class ProductSearchAgentResponse(BaseModel):
 class ErrorResponse(BaseModel):
     detail: str
 
+class HealthCheckResponse(BaseModel):
+    status: str = Field(..., description="Health status of the service")
+    timestamp: str = Field(..., description="ISO timestamp of the health check")
+    version: str = Field(..., description="API version")
+
 class HealthIssueDetail(BaseModel):
     issue: str
     evidence: str
