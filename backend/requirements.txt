@@ -1,9 +1,10 @@
 fastapi
 uvicorn[standard]
 pydantic
-# Agno framework and related dependencies
 agno
 google-generativeai
+googlesearch-python
+pycountry
 asyncpg
 psycopg2-binary
 sqlalchemy[asyncio]

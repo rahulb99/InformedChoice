@@ -35,6 +35,26 @@ GENERATED ALWAYS AS (to_tsvector('english', description || ' ' || brand_name || 
 create or replace function search_products (input text) returns setof products as $$
 begin
   return query
-  select * from products where autocomplete @@ to_tsquery(input || ':*') or input % (description || ' ' || brand_name || ' ' || brand_owner) order by ts_rank(autocomplete, plainto_tsquery('english', input)) desc, length(description) asc;
+  select * from products where autocomplete @@ to_tsquery(input || ':*') or input % (description || ' ' || brand_name || ' ' || brand_owner) order by ts_rank(autocomplete, plainto_tsquery('english', input)) desc;
 end;
 $$ language plpgsql;
+
+ALTER TABLE products
+ADD COLUMN processed_score INTEGER CHECK (processed_score BETWEEN 1 AND 5),
+ADD COLUMN processed_score_explanation TEXT,
+ADD COLUMN nutrition_score INTEGER CHECK (nutrition_score BETWEEN 1 AND 5),
+ADD COLUMN nutrition_score_explanation TEXT,
+ADD COLUMN nutrition_info TEXT,
+ADD COLUMN url TEXT UNIQUE;
+ADD COLUMN health_issues JSON;
+
+UPDATE products
+SET nutrition_info = n.nutrition_info
+FROM (
+    SELECT 
+        fdc_id, 
+        STRING_AGG(Name || ' - ' || Amount || Unit_name, '; ') AS nutrition_info
+    FROM nutrients
+    GROUP BY fdc_id
+) n
+WHERE products.fdc_id = n.fdc_id;

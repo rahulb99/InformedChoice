@@ -93,9 +93,9 @@ export const SearchScreen: React.FC = () => {
               placeholder="e.g., organic apple juice, whole wheat bread"
             />
           </View>
-          <View style={styles.searchButtonContainer}>
+          {/* <View style={styles.searchButtonContainer}>
             <Button title="Search" onPress={() => handleSearch()} disabled={loading} />
-          </View>
+          </View> */}
         </View>
 
         <View style={styles.alternativeContainer}>

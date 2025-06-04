@@ -5,14 +5,32 @@ import axios from 'axios';
 // Ensure your backend is running and accessible from your Expo app (especially on physical devices)
 const API_BASE_URL = 'http://localhost:8000/v1'; // Replace with your actual backend URL if different
 
+export interface HealthIssueDetail {
+  issue: string;
+  evidence: string;
+}
+
+export interface IngredientHealthIssue {
+  ingredient: string;
+  issues: HealthIssueDetail[];
+}
+
+export interface PotentialHealthIssues {
+  potential_health_issues: IngredientHealthIssue[];
+}
+
 export interface ProductSearchResponse {
-  product_name: string;
-  ingredients: string[];
-  category: string;
-  processing_score: number;
-  score_explanation: string;
+  name: string; // Changed from product_name
+  brand?: string; // Added
+  ingredients: string[]; // Kept as string[]
+  category?: string; // Made optional
+  processed_score: number; // Changed from processing_score
+  processed_score_explanation: string; // Changed from score_explanation
+  nutrition_score: number; // Added
+  nutrition_score_explanation: string; // Added
+  health_issues: PotentialHealthIssues; // Added
   retailer?: string;
-  product_url?: string;
+  url?: string; // Changed from product_url
 }
 
 export interface ProductSearchRequest {

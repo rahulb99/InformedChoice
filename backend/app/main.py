@@ -1,10 +1,12 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from .core.schemas import ProductSearchRequest, ProductSearchResponse, ErrorResponse, AutocompleteSuggestion, HealthCheckResponse
+
+from .schemas import ProductSearchRequest, ProductSearchResponse, ErrorResponse, AutocompleteSuggestion, ServiceHealthCheckResponse
 from .crud import search_products, get_autocomplete_suggestions
 
 from typing import List
 from datetime import datetime
+
 
 app = FastAPI(
     title="InformedChoice API",
@@ -80,16 +82,16 @@ async def search_products_endpoint(request_body: ProductSearchRequest):
 
 
 @app.get("/health",
-         response_model=HealthCheckResponse,
+         response_model=ServiceHealthCheckResponse,
          responses={
-             200: {"model": HealthCheckResponse, "description": "Service is healthy"}
+             200: {"model": ServiceHealthCheckResponse, "description": "Service is healthy"}
          })
 async def health_check():
     """
     Health check endpoint for monitoring service availability.
     Returns current timestamp and service status.
     """
-    return HealthCheckResponse(
+    return ServiceHealthCheckResponse(
         status="healthy",
         timestamp=datetime.utcnow().isoformat() + "Z",
         version="0.1.0"
