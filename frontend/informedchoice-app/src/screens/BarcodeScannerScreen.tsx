@@ -15,7 +15,7 @@ export const BarcodeScannerScreen: React.FC = () => {
     try {
       // Use the dedicated barcode search endpoint
       const result = await apiService.searchProducts({ gtin_upc: barcodeData });
-      if (!result || !result.product_name) {
+      if (!result || !result.name) {
         console.warn('No product found for barcode:', barcodeData);
         // Fallback: Navigate back to search with the barcode data as a regular search
         navigation.navigate('Search', { barcodeData });

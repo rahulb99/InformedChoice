@@ -1,242 +1,349 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Linking, TouchableOpacity } from 'react-native';
-import { ProductSearchResponse, IngredientHealthIssue, HealthIssueDetail } from '../services/apiService'; // Using ProductSearchResponse from apiService
+import { ProductSearchResponse, IngredientHealthIssue, HealthIssueDetail } from '../services/apiService';
 
 interface ProductDetailsCardProps {
   productInfo: ProductSearchResponse;
 }
 
 const getScoreColor = (score: number) => {
-  if (score <= 2) return '#4CAF50'; // Green for 1-2
-  if (score === 3) return '#FFC107'; // Amber for 3
-  return '#F44336'; // Red for 4-5
+  if (score <= 2) return '#4CAF50';
+  if (score === 3) return '#FFC107';
+  return '#F44336';
+};
+
+const getScoreBackground = (score: number) => {
+  if (score <= 2) return '#E8F5E8';
+  if (score === 3) return '#FFF8E1';
+  return '#FFEBEE';
 };
 
 export const ProductDetailsCard: React.FC<ProductDetailsCardProps> = ({ productInfo }) => {
   const processedScoreColor = getScoreColor(productInfo.processed_score);
   const nutritionScoreColor = getScoreColor(productInfo.nutrition_score);
+  const processedScoreBackground = getScoreBackground(productInfo.processed_score);
+  const nutritionScoreBackground = getScoreBackground(productInfo.nutrition_score);
 
   return (
-    <View style={styles.card}>
-      {productInfo.name && (
-        <Text style={styles.productName}>{productInfo.name}</Text>
-      )}
-      {productInfo.brand && (
-        <Text style={styles.brandName}>Brand: {productInfo.brand}</Text>
-      )}
-      {productInfo.retailer &&
-        <Text style={styles.retailerName}>Available at: {productInfo.retailer.charAt(0).toUpperCase() + productInfo.retailer.slice(1)}</Text>
-      }
-      {productInfo.category && (
-        <Text style={styles.category}>Category: {productInfo.category}</Text>
-      )}
-
-      <View style={styles.scoreSection}>
-        <Text style={styles.scoreSectionTitle}>Processed Score</Text>
-        <View style={styles.scoreContainer}>
-          <Text style={styles.scoreLabel}>Score:</Text>
-          <Text style={[styles.scoreValue, { color: processedScoreColor }]}>
-            {productInfo.processed_score}
-          </Text>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      {/* Header Section */}
+      <View style={styles.headerCard}>
+        {productInfo.name && (
+          <Text style={styles.productName}>{productInfo.name}</Text>
+        )}
+        {productInfo.brand && (
+          <Text style={styles.brandName}>{productInfo.brand}</Text>
+        )}
+        <View style={styles.metaRow}>
+          {productInfo.retailer && (
+            <View style={styles.metaItem}>
+              <Text style={styles.metaLabel}>Available at</Text>
+              <Text style={styles.metaValue}>{productInfo.retailer.charAt(0).toUpperCase() + productInfo.retailer.slice(1)}</Text>
+            </View>
+          )}
+          {productInfo.category && (
+            <View style={styles.metaItem}>
+              <Text style={styles.metaLabel}>Category</Text>
+              <Text style={styles.metaValue}>{productInfo.category}</Text>
+            </View>
+          )}
         </View>
-        <Text style={styles.scoreExplanation}>{productInfo.processed_score_explanation}</Text>
       </View>
 
-      <View style={styles.scoreSection}>
-        <Text style={styles.scoreSectionTitle}>Nutrition Score</Text>
-        <View style={styles.scoreContainer}>
-          <Text style={styles.scoreLabel}>Score:</Text>
-          <Text style={[styles.scoreValue, { color: nutritionScoreColor }]}>
-            {productInfo.nutrition_score}
-          </Text>
-        </View>
-        <Text style={styles.scoreExplanation}>{productInfo.nutrition_score_explanation}</Text>
-      </View>
-
-      <Text style={styles.ingredientsTitle}>Ingredients:</Text>
-      {productInfo.ingredients.length > 0 ? (
-        <ScrollView style={styles.ingredientsScroll} nestedScrollEnabled={true}>
-          {productInfo.ingredients.map((ingredient: string, index: number) => (
-            <Text key={index} style={styles.ingredientItem}>
-              - {ingredient}
+      {/* Scores Grid */}
+      <View style={styles.scoresGrid}>
+        <View style={[styles.scoreCard, { backgroundColor: processedScoreBackground }]}>
+          <Text style={styles.scoreCardTitle}>Processed Score</Text>
+          <View style={styles.scoreCircle}>
+            <Text style={[styles.scoreNumber, { color: processedScoreColor }]}>
+              {productInfo.processed_score}/5
             </Text>
-          ))}
-        </ScrollView>
-      ) : (
-        <Text style={styles.ingredientItem}>No ingredients listed.</Text>
-      )}
+          </View>
+          <Text style={styles.scoreExplanation}>{productInfo.processed_score_explanation}</Text>
+        </View>
 
-      {productInfo.health_issues && productInfo.health_issues.potential_health_issues && productInfo.health_issues.potential_health_issues.length > 0 && (
-        <View style={styles.healthIssuesSection}>
-          <Text style={styles.healthIssuesTitle}>Potential Health Issues:</Text>
-          <ScrollView style={styles.healthIssuesScroll} nestedScrollEnabled={true}>
-            {productInfo.health_issues.potential_health_issues.map((item: IngredientHealthIssue, index: number) => (
-              <View key={index} style={styles.healthIssueIngredientBlock}>
-                <Text style={styles.healthIssueIngredientName}>{item.ingredient}:</Text>
-                {item.issues.map((issue: HealthIssueDetail, issueIndex: number) => (
-                  <View key={issueIndex} style={styles.healthIssueDetail}>
-                    <Text style={styles.healthIssueText}>• {issue.issue}:</Text>
-                    <Text style={styles.healthIssueEvidence}>{issue.evidence}</Text>
+        <View style={[styles.scoreCard, { backgroundColor: nutritionScoreBackground }]}>
+          <Text style={styles.scoreCardTitle}>Nutrition Score</Text>
+          <View style={styles.scoreCircle}>
+            <Text style={[styles.scoreNumber, { color: nutritionScoreColor }]}>
+              {productInfo.nutrition_score}/5
+            </Text>
+          </View>
+          <Text style={styles.scoreExplanation}>{productInfo.nutrition_score_explanation}</Text>
+        </View>
+      </View>
+
+      {/* Content Grid */}
+      <View style={styles.contentGrid}>
+        {/* Ingredients Card */}
+        <View style={styles.contentCard}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardTitle}>Ingredients</Text>
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>{productInfo.ingredients.length}</Text>
+            </View>
+          </View>
+          {productInfo.ingredients.length > 0 ? (
+            <ScrollView style={styles.ingredientsContainer} nestedScrollEnabled={true}>
+              <View style={styles.ingredientsGrid}>
+                {productInfo.ingredients.map((ingredient: string, index: number) => (
+                  <View key={index} style={styles.ingredientChip}>
+                    <Text style={styles.ingredientText}>{ingredient}</Text>
                   </View>
                 ))}
               </View>
-            ))}
-          </ScrollView>
+            </ScrollView>
+          ) : (
+            <Text style={styles.emptyText}>No ingredients listed</Text>
+          )}
         </View>
-      )}
 
+        {/* Health Issues Card */}
+        {productInfo.health_issues && productInfo.health_issues.potential_health_issues && productInfo.health_issues.potential_health_issues.length > 0 && (
+          <View style={styles.contentCard}>
+            <View style={styles.cardHeader}>
+              <Text style={styles.cardTitle}>Health Concerns</Text>
+              <View style={[styles.badge, styles.warningBadge]}>
+                <Text style={styles.badgeText}>{productInfo.health_issues.potential_health_issues.length}</Text>
+              </View>
+            </View>
+            <ScrollView style={styles.healthIssuesContainer} nestedScrollEnabled={true}>
+              {productInfo.health_issues.potential_health_issues.map((item: IngredientHealthIssue, index: number) => (
+                <View key={index} style={styles.healthIssueCard}>
+                  <Text style={styles.ingredientNameHeader}>{item.ingredient}</Text>
+                  {item.issues.map((issue: HealthIssueDetail, issueIndex: number) => (
+                    <View key={issueIndex} style={styles.issueItem}>
+                      <Text style={styles.issueTitle}>• {issue.issue}</Text>
+                      <Text style={styles.issueEvidence}>{issue.evidence}</Text>
+                    </View>
+                  ))}
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        )}
+      </View>
+
+      {/* Action Button */}
       {productInfo.url && (
-        <TouchableOpacity onPress={() => Linking.openURL(productInfo.url!)}>
-          <Text style={styles.productUrl}>View Product Online</Text>
+        <TouchableOpacity 
+          style={styles.actionButton} 
+          onPress={() => Linking.openURL(productInfo.url!)}
+        >
+          <Text style={styles.actionButtonText}>View Product Online</Text>
         </TouchableOpacity>
       )}
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 20,
-    marginVertical: 10,
-    width: '100%', // Take full width of its container in ResultsScreen
-    maxWidth: 500, // Max width for larger screens if ever used in web
+  container: {
+    flex: 1,
+    backgroundColor: '#F5F7FA',
+    padding: 16,
+  },
+  headerCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 24,
+    marginBottom: 16,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
   },
   productName: {
-    fontSize: 24, // Slightly larger
-    fontWeight: 'bold',
-    marginBottom: 8, // Adjusted margin
-    color: '#333',
-    textAlign: 'center',
-  },
-  brandName: { // New style for brand
-    fontSize: 18,
-    fontWeight: '500',
-    marginBottom: 8,
-    color: '#555',
-    textAlign: 'center',
-  },
-  retailerName: {
-    fontSize: 16,
-    fontWeight: '500',
-    marginBottom: 10, // Adjusted margin
-    color: '#666',
-    textAlign: 'center',
-  },
-  category: {
-    fontSize: 16,
-    fontWeight: '500',
-    marginBottom: 15,
-    color: '#666',
-    textAlign: 'center',
-  },
-  scoreSection: { // New style for grouping score and its explanation
-    marginBottom: 20,
-    alignItems: 'center', // Center title and content
-  },
-  scoreSectionTitle: { // New style for "Processed Score" / "Nutrition Score" titles
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
-  },
-  scoreContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 8,
-  },
-  scoreLabel: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginRight: 10,
-    color: '#444',
-  },
-  scoreValue: {
     fontSize: 28,
+    fontWeight: 'bold',
+    color: '#1A1A1A',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  brandName: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    flexWrap: 'wrap',
+  },
+  metaItem: {
+    alignItems: 'center',
+    minWidth: 120,
+  },
+  metaLabel: {
+    fontSize: 12,
+    color: '#999',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  metaValue: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+  },
+  scoresGrid: {
+    flexDirection: 'row',
+    marginBottom: 16,
+    gap: 12,
+  },
+  scoreCard: {
+    flex: 1,
+    borderRadius: 16,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  scoreCardTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 12,
+  },
+  scoreCircle: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  scoreNumber: {
+    fontSize: 24,
     fontWeight: 'bold',
   },
   scoreExplanation: {
-    fontSize: 14,
-    fontStyle: 'italic',
-    color: '#666',
-    marginTop: 5, // Added margin top for spacing from score value
+    fontSize: 12,
     textAlign: 'center',
-    paddingHorizontal: 10, // Add some padding so text doesn't touch edges
+    color: '#666',
+    lineHeight: 16,
   },
-  ingredientsTitle: {
-    fontSize: 18,
+  contentGrid: {
+    gap: 16,
+  },
+  contentCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  cardTitle: {
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 10,
+    color: '#1A1A1A',
+  },
+  badge: {
+    backgroundColor: '#E3F2FD',
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    minWidth: 24,
+    alignItems: 'center',
+  },
+  warningBadge: {
+    backgroundColor: '#FFECB3',
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: '600',
     color: '#333',
   },
-  ingredientsScroll: {
-    maxHeight: 150, // Adjusted height
-    borderColor: '#eee',
-    borderWidth: 1,
-    borderRadius: 6,
-    padding: 10,
+  ingredientsContainer: {
+    maxHeight: 200,
   },
-  ingredientItem: {
-    fontSize: 15,
+  ingredientsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  ingredientChip: {
+    backgroundColor: '#F5F5F5',
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    marginBottom: 4,
+  },
+  ingredientText: {
+    fontSize: 14,
     color: '#555',
-    marginBottom: 5,
-    lineHeight: 20,
   },
-  healthIssuesSection: { // New style
-    marginTop: 20,
+  emptyText: {
+    fontSize: 16,
+    color: '#999',
+    textAlign: 'center',
+    fontStyle: 'italic',
   },
-  healthIssuesTitle: { // New style
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    color: '#333',
+  healthIssuesContainer: {
+    maxHeight: 300,
   },
-  healthIssuesScroll: { // New style
-    maxHeight: 250,
-    borderColor: '#eee',
-    borderWidth: 1,
-    borderRadius: 6,
-    padding: 10,
+  healthIssueCard: {
+    backgroundColor: '#FFF9C4',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    borderLeftWidth: 4,
+    borderLeftColor: '#FF9800',
   },
-  healthIssueIngredientBlock: { // New style
-    marginBottom: 15,
-  },
-  healthIssueIngredientName: { // New style
+  ingredientNameHeader: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#444',
-    marginBottom: 5,
-  },
-  healthIssueDetail: { // New style
-    marginLeft: 10,
+    color: '#E65100',
     marginBottom: 8,
   },
-  healthIssueText: { // New style
-    fontSize: 15,
-    color: '#555',
-    fontWeight: '500',
+  issueItem: {
+    marginBottom: 8,
   },
-  healthIssueEvidence: { // New style
+  issueTitle: {
     fontSize: 14,
-    color: '#777',
-    fontStyle: 'italic',
-    marginLeft: 10, // Indent evidence under the issue
+    fontWeight: '500',
+    color: '#333',
+    marginBottom: 4,
   },
-  productUrl: { // New style
+  issueEvidence: {
+    fontSize: 13,
+    color: '#666',
+    fontStyle: 'italic',
+    marginLeft: 12,
+    lineHeight: 18,
+  },
+  actionButton: {
+    backgroundColor: '#007AFF',
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    marginTop: 24,
+    marginBottom: 32,
+  },
+  actionButtonText: {
+    color: '#FFFFFF',
     fontSize: 16,
-    color: '#007AFF', // Standard link color
-    textAlign: 'center',
-    marginTop: 20,
-    textDecorationLine: 'underline',
+    fontWeight: '600',
   },
 });
