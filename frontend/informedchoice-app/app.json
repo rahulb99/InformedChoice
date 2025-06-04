@@ -20,7 +20,11 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.CAMERA"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -40,6 +44,12 @@
         "projectId": "17a65b16-4d63-475f-9168-56e0411fb4c3"
       }
     },
-    "owner": "kingkahn"
+    "owner": "kingkahn",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/17a65b16-4d63-475f-9168-56e0411fb4c3"
+    }
   }
 }
