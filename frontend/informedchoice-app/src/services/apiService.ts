@@ -3,7 +3,8 @@ import axios from 'axios';
 // Define the base URL for your FastAPI backend
 // If running locally for dev, this might be your local IP or localhost
 // Ensure your backend is running and accessible from your Expo app (especially on physical devices)
-const API_BASE_URL = 'http://localhost:8000/v1'; // Replace with your actual backend URL if different
+// const API_BASE_URL = 'http://localhost:8000/v1'; // Replace with your actual backend URL if different
+const API_BASE_URL = 'https://informed-choice-e07b91de6ab1.herokuapp.com'; 
 
 export interface HealthIssueDetail {
   issue: string;

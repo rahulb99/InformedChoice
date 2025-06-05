@@ -19,6 +19,7 @@ origins = [
     "http://localhost:8081",  # Expo Web/Development server
     "exp://*", # For Expo Go app on physical devices (adjust if needed)
     # Add other origins if necessary, e.g., your deployed frontend URL
+    "https://informedchoice--dy7l0j6kqb.expo.app"
 ]
 
 app.add_middleware(
